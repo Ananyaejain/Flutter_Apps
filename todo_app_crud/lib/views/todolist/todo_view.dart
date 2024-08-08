@@ -114,12 +114,6 @@ class _ToDoViewState extends State<ToDoView> {
                             onDeleteTask: (task) async {
                               await _taskService.deleteTask(taskId: task.id);
                             },
-                            onChanged: (task) async {
-                              await _taskService.updateTask(
-                                task: task,
-                                text: task.text,
-                              );
-                            },
                           );
                         } else {
                           return const CircularProgressIndicator();

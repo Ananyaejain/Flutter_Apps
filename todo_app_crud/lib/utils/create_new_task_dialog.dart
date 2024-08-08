@@ -25,6 +25,7 @@ class _CreateNewTaskDialogState extends State<CreateNewTaskDialog> {
   @override
   void dispose() {
     _textController.dispose();
+    deleteTaskIfEmpty();
     super.dispose();
   }
 
@@ -47,11 +48,9 @@ class _CreateNewTaskDialogState extends State<CreateNewTaskDialog> {
   Future<DatabaseTask> createNewTask(BuildContext context) async {
     final currUser = FirebaseAuth.instance.currentUser!;
     final email = currUser.email!;
-    print(currUser.email);
     final owner = await _taskService.fetchUser(email: email);
     final newTask = await _taskService.createTask(owner: owner);
     _task = newTask;
-    print(_task!.id);
     return newTask;
   }
 
@@ -63,12 +62,7 @@ class _CreateNewTaskDialogState extends State<CreateNewTaskDialog> {
         task: task,
         text: text,
       );
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        toDoRoute,
-        (predicate) => false,
-      );
-    } else {
-      print('ERROR');
+      Navigator.pop(context);
     }
   }
 
@@ -77,10 +71,17 @@ class _CreateNewTaskDialogState extends State<CreateNewTaskDialog> {
     if (task != null) {
       _taskService.deleteTask(taskId: task.id);
     }
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      toDoRoute,
-      (predicate) => false,
-    );
+    // Navigator.of(context).pushNamedAndRemoveUntil(
+    //   toDoRoute,
+    //   (predicate) => false,
+    // );
+  }
+  void deleteTaskIfEmpty(){
+    final task = _task;
+    final text = _textController.text;
+    if(task!=null&& text.isEmpty){
+      _taskService.deleteTask(taskId: task.id);
+    }
   }
 
   @override

@@ -50,7 +50,7 @@ class TaskService {
         _user = user;
       }
       return user;
-    } on CouldNotFindUser {
+    } on UserDoesNotExistException {
       final createdUser = await createUser(email: email);
       if (setAsCurrentUser) {
         _user = createdUser;
@@ -58,6 +58,31 @@ class TaskService {
       return createdUser;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<DatabaseTask> checkBoxChanged({required DatabaseTask task}) async{
+    await isDbOpen();
+    final db = _getDatabaseOrThrow();
+
+    await fetchTask(taskId: task.id);
+
+    final updateCount = await db.update(
+      taskTable,
+      {
+        isCheckedColumn: !task.isChecked,
+      },
+      where: 'id=?',
+      whereArgs: [task.id],
+    );
+    if (updateCount == 0) {
+      throw CouldNotUpdateTask();
+    } else {
+      final updatedTask = await fetchTask(taskId: task.id);
+      _tasks.removeWhere((task) => task.id == updatedTask.id);
+      _tasks.add(updatedTask);
+      _tasksStreamController.add(_tasks);
+      return updatedTask;
     }
   }
 
@@ -73,7 +98,6 @@ class TaskService {
     final updateCount = await db.update(
       taskTable,
       {
-        isCheckedColumn: !task.isChecked,
         textColumn: text,
       },
       where: 'id=?',
@@ -352,6 +376,6 @@ const createTasksTable = '''CREATE TABLE IF NOT EXISTS "tasks" (
 	"uid"	INTEGER NOT NULL,
 	"text"	TEXT,
 	"isChecked"	INTEGER DEFAULT 0,
-	FOREIGN KEY("uid") REFERENCES "user"("id"),
-	PRIMARY KEY("id" AUTOINCREMENT)
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("uid") REFERENCES "user"("id")
 );''';
