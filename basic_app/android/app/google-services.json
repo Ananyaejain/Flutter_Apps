@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "399517492333",
+    "project_id": "basicapp-bfa89",
+    "storage_bucket": "basicapp-bfa89.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:399517492333:android:e1ef0edf50d7cf7c394b64",
+        "android_client_info": {
+          "package_name": "com.example.basic_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBklvKU1VgXMIOAN7PFmJN3-NtWF-moyxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
