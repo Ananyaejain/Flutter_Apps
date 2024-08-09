@@ -61,7 +61,7 @@ class TaskService {
     }
   }
 
-  Future<DatabaseTask> checkBoxChanged({required DatabaseTask task}) async{
+  Future<void> checkBoxChanged({required DatabaseTask task}) async{
     await isDbOpen();
     final db = _getDatabaseOrThrow();
 
@@ -78,11 +78,7 @@ class TaskService {
     if (updateCount == 0) {
       throw CouldNotUpdateTask();
     } else {
-      final updatedTask = await fetchTask(taskId: task.id);
-      _tasks.removeWhere((task) => task.id == updatedTask.id);
-      _tasks.add(updatedTask);
-      _tasksStreamController.add(_tasks);
-      return updatedTask;
+      await _cacheAllTasks();
     }
   }
 
